@@ -71,6 +71,15 @@ int lenCadenaMasLarga(Cadena cadenas[], int cantCadenas);
 void crearSeparador(char resultado[], int len, const char separador);
 char enteroACaracter(int numero);
 void formatearMenu(const char tituloMenu[], char output[], Cadena opciones[], int cantOpciones);
+int esMinuscula(char nombreUsuario[]);
+void aMinuscula(char cadena[], char* copia);
+int comprobarClaveUsuario(char claveUsuario[]);
+int comprobarNombreUsuario(char nombreUsuario[]);
+int comprobarApellidoYNombre(char apellidoYNombre[]);
+int analizarCadenaPorCaracteresNoAlfanumericos(char cadena[]);
+int analizarCadenaPorCaracteresSoloAlfabeticos(char cadena[]);
+int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncontrada);
+int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncontrada);
 
 void inputString(char resultado[], const char texto[], int cantMaxCaracteres, int cantMinCaracteres){
 	bool loop = true;
@@ -302,3 +311,262 @@ void formatearMenu(const char tituloMenu[], char output[], Cadena opciones[], in
 	strcpy(output, resultado);
 };
 
+int esMinuscula(char nombreUsuario[]){
+	
+	char primerLetra = nombreUsuario[0];
+	
+	for(int i=0; i<26; i++){
+		if(primerLetra == ABC_MAYUS[i]){
+			return 0;
+		}
+	}
+	
+	return 1;
+};
+
+void aMinuscula(char cadena[], char* copia) {
+	int cadenaLen = strlen(cadena);
+	int index = 0;
+  	for (int i = 0; i < cadenaLen; i++) {
+  		int valorASCII = cadena[i];
+  		if(valorASCII>64 && valorASCII<91){
+  			copia[index] = tolower(cadena[i]);		
+  			index++;
+  		}
+  		else if(valorASCII>96 && valorASCII<123){
+  			copia[index] = cadena[i];
+  			index++;
+  		}
+  	}
+};
+
+int comprobarClaveUsuario(char claveUsuario[]){
+	int claveUsuarioLen = strlen(claveUsuario);
+	char consecucionEncontrada_Numeros[4];
+	char consecucionEncontrada_Letras[2];
+	
+	if(analizarCadenaPorCaracteresNoAlfanumericos(claveUsuario)){
+		cout << "La clave de usuario no puede tener ningun caracter de puntuacion, ni acentos, ni espacios." << endl;
+		cout << "Solo se permiten caracteres alfanumericos." << endl;
+		cout << "Por favor, ingresela nuevamente" << endl;
+		
+		limpiar(1);
+
+		return 0;
+	}
+
+	// comprobar que contiene mayuscula, minuscula y numero
+	if(cantidadCoincidencias(claveUsuario, ABC_MINUS) < 1 || cantidadCoincidencias(claveUsuario, ABC_MAYUS) < 1 || cantidadCoincidencias(claveUsuario, NUMEROS) < 1){
+		cout << "La clave de usuario debe tener al menos una letra mayuscula, una letra minuscula y un numero." << endl;
+		cout << "Por favor, ingresela nuevamente." << endl;
+		
+		limpiar(1);
+		
+		return 0;
+	}
+	
+	// comprobar que no contiene caracteres numericos consecutivos
+	if(analizarCadenaPorConsecuciones_Numeros(claveUsuario, consecucionEncontrada_Numeros)){
+		cout << "La clave de usuario no debe tener mas de 3 caracteres numericos consecutivos." << endl;
+		cout << "Se encontro la siguiente secuencia de caracteres consecutivos: " << "\"...";
+		for(int i=0; i<4; i++){
+			cout << consecucionEncontrada_Numeros[i];
+		}
+		cout << "...\"" << endl;
+		cout << "Por favor, ingresela nuevamente.";
+		
+		limpiar(1);
+		
+		return 0;		
+	}
+	
+	// comprobar que no contiene letras consecutivas
+	if(analizarCadenaPorConsecuciones_Letras(claveUsuario, consecucionEncontrada_Letras)){
+		cout << "La clave de usuario no debe tener mas de 2 letras alfabeticamente consecutivas." << endl;
+		cout << "Se encontro la siguiente secuencia de caracteres consecutivos: " << "\"...";
+		for(int i=0; i<2; i++){
+			cout << consecucionEncontrada_Letras[i];
+		}
+		cout << "...\"" << endl;
+		cout << "Por favor, ingresela nuevamente." << endl;
+		
+		limpiar(1);
+		
+		return 0;		
+	}
+	return 1;
+};
+
+
+int comprobarNombreUsuario(char nombreUsuario[]){
+	char ABC_MAYUS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char ABC_MINUS[] = "abcdefghijklmnopqrstuvwxyz";
+	char CARACTERES[] = "0123456789+-/*?¿!¡";
+	int nombreUsuarioLen = strlen(nombreUsuario);
+
+	// comprobar si comienza con min�scula
+	if(!esMinuscula(nombreUsuario)){
+		cout << "El nombre de usuario debe comenzar con una letra minuscula." << endl; 
+		cout << "Por favor, ingreselo nuevamente." << endl;
+		cout << endl;
+		limpiar(1);
+		
+		return 0;
+	}
+	
+	// comprobar cantidad de mayusculas
+	if(cantidadCoincidencias(nombreUsuario, ABC_MAYUS) < 2){
+		cout << "El nombre de usuario debe contener al menos 2 letras mayusculas." << endl;
+		cout << "Por favor, ingreselo nuevamente." << endl;
+		cout << endl;
+		limpiar(1);
+		
+		return 0;
+	}
+	
+	//comprobar cantidad de digitos
+	if(cantidadCoincidencias(nombreUsuario, CARACTERES) > 3){
+		cout << "El nombre de usuario debe contener como maximo 3 digitos." << endl; 
+		cout << "Por favor, ingreselo nuevamente." << endl;
+		cout << endl;
+		limpiar(1);
+		
+		return 0;
+	}
+	return 1;
+};
+
+int comprobarApellidoYNombre(char apellidoYNombre[]){
+  int apellidoYNombreLen = strlen(apellidoYNombre);
+
+  if(apellidoYNombreLen <= 0 || apellidoYNombreLen > 60){
+    cout << "La longitud del apellido y nombre ingresado es invalida." << endl;
+    cout << "Por favor, ingreselo nuevamente." << endl;
+
+    limpiar(1);
+
+    return 0;
+  } 
+
+int analizarCadenaPorCaracteresNoAlfanumericos(char cadena[]){
+	int cadenaLen = strlen(cadena);
+
+	for(int i=0; i<cadenaLen; i++){
+		int valorASCII = ASCII(cadena[i]);
+		if(valorASCII < 48 || (valorASCII > 57 && valorASCII < 65) || (valorASCII > 90 && valorASCII < 97) || valorASCII > 122){
+			return 1;
+		}
+	}
+	return 0;
+};
+
+int analizarCadenaPorCaracteresSoloAlfabeticos(char cadena[]){
+  int cadenaLen = strlen(cadena);
+
+  for(int i=0; i<cadenaLen; i++){
+    int valorASCII = ASCII(cadena[i]);
+    if(!(valorASCII > 64 && valorASCII < 91 || valorASCII > 96 && valorASCII < 123 || valorASCII == 32)){
+      return 1;
+    }
+  }
+
+  return 0;
+};
+
+int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncontrada){
+	int cadenaLen = strlen(cadena);
+	char copiaEnMinusculas[cadenaLen];
+	aMinuscula(cadena, copiaEnMinusculas);
+	
+	int index = 0;
+	char aux;
+	
+	bool hayOrdenAscendente;
+	for(int i=0; i<cadenaLen; i++){
+		hayOrdenAscendente = true;
+		int valorASCII = ASCII(copiaEnMinusculas[i]);
+		
+		if(valorASCII > 96 && valorASCII < 123){
+			
+			if(i != 0 && aux == valorASCII - 1){
+				consecucionEncontrada[index] = cadena[i];
+				index++;
+				for(int j=0; j<2; j++){
+					if(consecucionEncontrada[j] == -1){
+						hayOrdenAscendente = false;
+					}
+				}
+				if(hayOrdenAscendente){
+					return 1;
+				} 
+			}
+			else{
+				consecucionEncontrada[0] = cadena[i];
+				consecucionEncontrada[1] = -1;
+				index = 1;
+			}
+			aux = ASCII(copiaEnMinusculas[i]);
+		}
+	}
+	return 0;
+};
+
+
+int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncontrada){
+	int cadenaLen = strlen(cadena);
+	int index = 0;
+	char aux;
+	
+	bool hayOrdenAscendente;
+	for(int i=0; i<cadenaLen; i++){
+		hayOrdenAscendente = true;
+		int valorASCII = ASCII(cadena[i]);
+		if(valorASCII > 47 && valorASCII < 58){
+			if(i != 0 && aux == valorASCII - 1){
+				consecucionEncontrada[index] = cadena[i];
+				index++;
+				for(int j=0; j<4; j++){
+					if(consecucionEncontrada[j] == -1){
+						hayOrdenAscendente = false;
+					}
+				}
+				if(hayOrdenAscendente) return 1;
+			}
+			else{
+				consecucionEncontrada[0] = cadena[i];
+				consecucionEncontrada[1] = -1;
+				consecucionEncontrada[2] = -1;
+				consecucionEncontrada[3] = -1;
+				index = 1;
+			}
+			aux = cadena[i];
+		}
+	}
+	
+	bool hayOrdenDescendente;
+	for(int i=0; i<cadenaLen; i++){
+		hayOrdenDescendente = true;
+		int valorASCII = ASCII(cadena[i]);
+		if(valorASCII > 47 && valorASCII < 58){		
+			if(i != 0 && aux == valorASCII + 1){
+				consecucionEncontrada[index] = cadena[i];
+				index++;
+				for(int j=0; j<4; j++){
+					if(consecucionEncontrada[j] == -1){
+						hayOrdenDescendente = false;
+					}
+				}
+				if(hayOrdenDescendente) return 1;
+			}
+			else{
+				consecucionEncontrada[0] = cadena[i];
+				consecucionEncontrada[1] = -1;
+				consecucionEncontrada[2] = -1;
+				consecucionEncontrada[3] = -1;
+				index = 1;
+			}
+			aux = cadena[i];
+		}
+	}
+	return 0;
+};
