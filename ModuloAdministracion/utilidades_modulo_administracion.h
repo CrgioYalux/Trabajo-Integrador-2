@@ -18,6 +18,8 @@ int comprobarDisponibilidadNombre_UsuarioVeterinario(char nombreUsuario[]);
 
 void listarAtenciones_porVeterinario();
 int buscarVeterinario_porNombre(Usuario_Veterinario &buscar_veterinario);
+void listarRankingAtenciones();
+void crearContadorAtenciones(Usuario_Veterinario nuevo_veterinario);
 
 int iniciarSesionAdministracion(){
 	if(comprobarExistenciaArchivo(direccion_archivo_usuarios)){
@@ -96,6 +98,7 @@ void menu_administracion(){
 				listarAtenciones_porVeterinario();
 				break;
 			case 4:
+				listarRankingAtenciones();
 				break;
 			case 5:
 				loopMenu = false;
@@ -252,6 +255,7 @@ void registrarUsuarioVeterinario(){
 	limpiar(1);
 
 	guardarUsuarioVeterinario(veterinario);
+	crearContadorAtenciones(veterinario);
 	
 	cout << "Credenciales registradas:" << endl;
 	cout << "Apellido y nombre: " << veterinario.apellido_nombre << endl;
@@ -424,4 +428,35 @@ int buscarVeterinario_porNombre(Usuario_Veterinario &buscar_veterinario){
 	}
 	fclose(VeterinariosGuardados);
 	return 0;
+};
+
+
+void listarRankingAtenciones(){
+	if(comprobarExistenciaArchivo(direccion_archivo_atenciones)){
+		FILE *Ranking;
+		ContadorAtenciones contador;
+		Ranking = fopen(direccion_archivo_ranking, "rb");
+		rewind(Ranking);
+		fread(&contador, sizeof(ContadorAtenciones), 1, Ranking);
+		while( !feof(Ranking) ){
+			cout << "Veterinario: " << contador.apellido_nombre_veterinario << endl;
+			cout << "Cantidad de Atenciones: " << contador.cantAtenciones << endl;
+			fread(&contador, sizeof(ContadorAtenciones), 1, Ranking);
+		}
+	}
+	else{
+		cout << "No hay atenciones registradas." << endl;
+	}
+		limpiar(1);
+};
+
+void crearContadorAtenciones(Usuario_Veterinario nuevo_veterinario){
+	FILE *Ranking;
+	ContadorAtenciones nuevo_contador;
+	nuevo_contador.cantAtenciones = 0;
+	strcpy(nuevo_contador.apellido_nombre_veterinario, nuevo_veterinario.apellido_nombre);
+	Ranking = fopen(direccion_archivo_ranking, "a+b");
+	fseek(Ranking, sizeof(ContadorAtenciones), SEEK_END);
+	fwrite(&nuevo_contador, sizeof(ContadorAtenciones), 1, Ranking);
+	fclose(Ranking);
 };
