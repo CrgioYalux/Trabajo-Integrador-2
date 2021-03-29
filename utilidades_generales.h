@@ -80,6 +80,8 @@ int analizarCadenaPorCaracteresNoAlfanumericos(char cadena[]);
 int analizarCadenaPorCaracteresSoloAlfabeticos(char cadena[]);
 int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncontrada);
 int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncontrada);
+int comprobarExistenciaArchivo(const char direccion[]);
+
 
 void inputString(char resultado[], const char texto[], int cantMaxCaracteres, int cantMinCaracteres){
 	bool loop = true;
@@ -570,3 +572,17 @@ int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncon
 	}
 	return 0;
 };
+
+
+int comprobarExistenciaArchivo(const char direccion[]){
+	FILE *Archivo;
+	Archivo = fopen(direccion, "rb");
+	if(Archivo == NULL){
+		fclose(Archivo);
+		return 0;
+	}
+	fclose(Archivo);
+	return 1;	
+};
+
+
