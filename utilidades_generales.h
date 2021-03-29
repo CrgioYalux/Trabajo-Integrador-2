@@ -14,22 +14,13 @@
 
 using namespace std;
 
-void limpiar(int i);
-void inputString(char resultado[], const char texto[], int cantMaxCaracteres = 101, int cantMinCaracteres = 1);
-void inputFloat(float &resultado, const char texto[], bool permitirLimites = false, int valorMin = INT_MIN, int valorMax = INT_MAX);
-void inputInt(int &resultado, const char texto[], bool permitirLimites = false, int valorMin = INT_MIN, int valorMax = INT_MAX);
-int comprobarCaracteresFloat(char numero[]);
-int cantidadCoincidencias(char cadena1[], char cadena2[]);
-int ASCII(char letra);
-float convertirCadenaEnFloat(char cadena[]);
-int convertirCadenaEnEntero(char cadena[]);
-
-
 char NUMEROS[] = "0123456789";
 char ABC_MAYUS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 char ABC_MINUS[] = "abcdefghijklmnopqrstuvwxyz";
 char CARACTERES[] = "0123456789+-/*?¿!¡";
 char SIMBOLOS[] = "+-/*?¿!¡._";
+
+typedef char Cadena[100];
 
 struct Usuario{
 	char nombre[11];
@@ -66,6 +57,20 @@ struct Turno {
 	int DNI;
 	char detalleAtencion[381];
 };
+
+void limpiar(int i);
+void inputString(char resultado[], const char texto[], int cantMaxCaracteres = 101, int cantMinCaracteres = 1);
+void inputFloat(float &resultado, const char texto[], bool permitirLimites = false, int valorMin = INT_MIN, int valorMax = INT_MAX);
+void inputInt(int &resultado, const char texto[], bool permitirLimites = false, int valorMin = INT_MIN, int valorMax = INT_MAX);
+int comprobarCaracteresFloat(char numero[]);
+int cantidadCoincidencias(char cadena1[], char cadena2[]);
+int ASCII(char letra);
+float convertirCadenaEnFloat(char cadena[]);
+int convertirCadenaEnEntero(char cadena[]);
+int lenCadenaMasLarga(Cadena cadenas[], int cantCadenas);
+void crearSeparador(char resultado[], int len, const char separador);
+char enteroACaracter(int numero);
+void formatearMenu(const char tituloMenu[], char output[], Cadena opciones[], int cantOpciones);
 
 void inputString(char resultado[], const char texto[], int cantMaxCaracteres, int cantMinCaracteres){
 	bool loop = true;
@@ -234,3 +239,66 @@ int convertirCadenaEnEntero(char cadena[]){
   }
 	return resultado;
 };
+
+int lenCadenaMasLarga(Cadena cadenas[], int cantCadenas){
+	int lenCadena = 0;
+	for(int i = 0; i<cantCadenas; i++){
+		if(strlen(cadenas[i]) > lenCadena){
+			lenCadena = strlen(cadenas[i]);
+		} 
+	}
+	return lenCadena;
+};
+
+void crearSeparador(char resultado[], int len, const char separador){
+	char texto_separador[len];
+	for(int i=0; i<len-2; i++){
+		texto_separador[i] = separador;
+	}
+	texto_separador[len-2] = '\n';
+	texto_separador[len-1] = '\0';
+	strcpy(resultado, texto_separador);
+};
+
+char enteroACaracter(int numero){
+    return numero + '0';
+};
+
+void formatearMenu(const char tituloMenu[], char output[], Cadena opciones[], int cantOpciones){
+	int resultadoLen = cantOpciones * 100 + 50;
+	char resultado[resultadoLen] = {'\0'};
+
+	char minimunLen = strlen("Cerrar la aplicacion\n");
+	int len = lenCadenaMasLarga(opciones, cantOpciones);
+	if(len < minimunLen){
+		len = minimunLen;
+	}
+	char separador[len+6];
+	crearSeparador(separador, len+4, '=');
+
+	strcat(resultado, tituloMenu);
+	strcat(resultado, "\n");
+	strcat(resultado, separador);
+
+	for(int i=0; i<cantOpciones; i++){
+		char numero = enteroACaracter(i+1);
+		char numero_opcion[] = {numero, '.', '\0'};
+		char opcion[100] = {'\0'};
+		strcat(opcion, numero_opcion);
+		strcat(opcion, opciones[i]);
+		strcat(opcion, "\n");
+		strcat(resultado, opcion);
+	}
+
+	char numero = enteroACaracter(cantOpciones+1);
+	char numero_opcion[] = {numero, '.', '\0'};
+	char opcion[100] = {'\0'};
+	strcat(opcion, "\n");
+	strcat(opcion, numero_opcion);	
+	strcat(opcion, "Cerrar la aplicacion\n");
+	strcat(resultado, opcion);
+	strcat(resultado, separador);
+	strcat(resultado, "Ingrese una opcion: ");
+	strcpy(output, resultado);
+};
+
