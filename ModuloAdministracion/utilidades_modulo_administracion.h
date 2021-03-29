@@ -1,3 +1,6 @@
+int iniciarSesionAdministracion();
+int validarAcceso(Usuario buscar_usuario);
+
 void menu_administracion();
 int menu_autenticacion_administracion();
 
@@ -12,6 +15,59 @@ void guardarUsuarioVeterinario(Usuario_Veterinario veterinario);
 int comprobarDisponibilidadNombre_Usuario(char nombreUsuario[]);
 int comprobarDisponibilidadNombre_UsuarioAsistente(char nombreUsuario[]);
 int comprobarDisponibilidadNombre_UsuarioVeterinario(char nombreUsuario[]);
+
+int iniciarSesionAdministracion(){
+	if(comprobarExistenciaArchivo(direccion_archivo_usuarios)){
+		Usuario usuario;
+
+		cout << "Ingrese su nombre de usuario: " << endl;
+		cout << "\n-> ";
+		_flushall();
+		gets(usuario.nombre);
+
+		system("cls");
+
+		cout << "Ingrese su clave de usuario: " << endl;
+		cout << "\n-> ";
+		_flushall();
+		gets(usuario.clave);
+
+		system("cls");
+
+		if(validarAcceso(usuario)){
+			cout << "Las credenciales ingresadas son correctas. Bienvenido " << usuario.nombre << "." << endl;
+			cout << "Presione cualquier tecla para ir al menu." << endl;
+			limpiar(0);
+			return 1;
+		}
+
+		cout << "Las credenciales ingresadas son incorrectas." << endl;	
+	}
+	else{
+		cout << "Aun no existen usuarios registrados." << endl;
+		cout << "Registrese primero para poder iniciar sesion." << endl;
+	}
+	limpiar(1);
+	return 0;
+};
+
+int validarAcceso(Usuario buscar_usuario){
+	FILE *UsuariosGuardados;
+	UsuariosGuardados = fopen(direccion_archivo_usuarios, "rb");
+	Usuario usuario;
+	rewind(UsuariosGuardados);
+	fread(&usuario, sizeof(Usuario), 1, UsuariosGuardados);
+	while( !feof(UsuariosGuardados) ){
+		if(strcmp(usuario.nombre, buscar_usuario.nombre) == 0 && strcmp(usuario.clave, buscar_usuario.clave) == 0){
+			fclose(UsuariosGuardados);
+			return 1;
+		}
+		fread(&usuario, sizeof(Usuario), 1, UsuariosGuardados);
+	}
+	fclose(UsuariosGuardados);
+	return 0;
+};
+
 
 void menu_administracion(){
 	bool loopMenu = true;
@@ -28,8 +84,10 @@ void menu_administracion(){
 
 		switch(elegir){
 			case 1:
+				registrarUsuarioVeterinario();
 				break;
 			case 2:
+				registrarUsuarioAsistente();
 				break;
 			case 3:
 				break;
