@@ -3,7 +3,9 @@
 #include "./utilidades_modulo_administracion.h"
 
 int main(){
-		
+	if(menu_autenticacion_administracion()){
+		menu_administracion();
+	}
 	return 0;	
 }
 

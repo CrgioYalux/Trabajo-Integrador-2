@@ -103,6 +103,14 @@ int analizarCadenaPorConsecuciones_Numeros(char cadena[], char consecucionEncont
 int comprobarExistenciaArchivo(const char direccion[]);
 
 
+void limpiar(int i){
+	if(i==1){
+		printf("\nPresione una tecla para continuar...\n\n");	
+	}
+	getch();
+	system("cls");
+};
+
 void inputString(char resultado[], const char texto[], int cantMaxCaracteres, int cantMinCaracteres){
 	bool loop = true;
 	do{

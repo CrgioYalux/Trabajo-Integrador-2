@@ -19,10 +19,19 @@ int main(){
 
 		switch(elegir){
 			case 1:
+				if(menu_autenticacion_consultorio()){
+					menu_consultorio();
+				};		
 				break;
 			case 2:
+				if(menu_autenticacion_recepcion()){
+					menu_recepcion();
+				};
 				break;
 			case 3:
+				if(menu_autenticacion_administracion()){
+					menu_administracion();
+				};
 				break;
 			case 4:
 				menuLoop = false;
