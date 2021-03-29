@@ -6,6 +6,9 @@ void guardarTurno(Turno nuevo_turno);
 void guardarMascota(Mascota nueva_mascota);
 int comprobarExistenciaMatricula(int matricula);
 int buscarMascotaPorDNI(int DNI);
+int iniciarSesionRecepcion();
+int validarAccesoRecepcion(Usuario_Asistente asistente);
+
 
 int menu_recepcion(){
   int elegir;
@@ -252,5 +255,56 @@ int buscarMascotaPorDNI(int DNI){
 		fread(&mascota, sizeof(Mascota), 1, MascotasGuardadas);
 	}
 	fclose(MascotasGuardadas);
+	return 0;
+};
+
+int iniciarSesionRecepcion(){
+  if(comprobarExistenciaArchivo(direccion_archivo_asistentes)){
+		Usuario_Asistente asistente;
+		
+		cout << "Ingrese su nombre de usuario:" << endl;
+		cout << "\n-> ";
+		_flushall();
+		gets(asistente.usuario.nombre);
+
+		system("cls");
+
+		cout << "Ingrese su clave de usuario:" << endl;
+		cout << "\n-> ";
+		_flushall();
+		gets(asistente.usuario.clave);
+
+		system("cls");
+
+		if(validarAccesoRecepcion(asistente)){
+			limpiar(1);
+			return 1;
+		}
+
+		cout << "Las credenciales ingresadas son incorrectas." << endl;	
+	}
+	else{
+		cout << "Aun no existen usuarios registrados." << endl;
+		cout << "Registrese primero para poder iniciar sesion." << endl;
+	}
+	limpiar(1);
+	return 0;
+};
+
+int validarAccesoRecepcion(Usuario_Asistente asistente){
+	Usuario_Asistente datos_guardados_usuario;
+	FILE *UsuariosGuardados;
+	UsuariosGuardados = fopen(direccion_archivo_asistentes, "rb");
+	rewind(UsuariosGuardados);
+	fread(&datos_guardados_usuario, sizeof(Usuario_Asistente), 1, UsuariosGuardados);
+	while( !feof(UsuariosGuardados) ){
+		if(strcmp(asistente.usuario.nombre, datos_guardados_usuario.usuario.nombre) == 0 && strcmp(asistente.usuario.clave, datos_guardados_usuario.usuario.clave) == 0){
+			cout << "Las credenciales ingresadas son correctas. Bienvenido " << datos_guardados_usuario.apellido_nombre << "." << endl;
+			fclose(UsuariosGuardados);
+			return 1;
+		}
+		fread(&datos_guardados_usuario, sizeof(Usuario_Asistente), 1, UsuariosGuardados);
+	}
+	fclose(UsuariosGuardados);
 	return 0;
 };
