@@ -16,6 +16,9 @@ int comprobarDisponibilidadNombre_Usuario(char nombreUsuario[]);
 int comprobarDisponibilidadNombre_UsuarioAsistente(char nombreUsuario[]);
 int comprobarDisponibilidadNombre_UsuarioVeterinario(char nombreUsuario[]);
 
+void listarAtenciones_porVeterinario();
+int buscarVeterinario_porNombre(Usuario_Veterinario &buscar_veterinario);
+
 int iniciarSesionAdministracion(){
 	if(comprobarExistenciaArchivo(direccion_archivo_usuarios)){
 		Usuario usuario;
@@ -350,4 +353,74 @@ int comprobarDisponibilidadNombre_UsuarioAsistente(char nombreUsuario[]){
 	  fclose(UsuariosAsistentesGuardados);
 	}
 	return 1;
+};
+
+void listarAtenciones_porVeterinario(){
+	if(comprobarExistenciaArchivo(direccion_archivo_atenciones)){
+		Usuario_Veterinario buscar_veterinario;
+		inputString(buscar_veterinario.apellido_nombre, "Ingrese el apellido y nombre del veterinario para poder ver sus atenciones.", 61);
+		if(buscarVeterinario_porNombre(buscar_veterinario)){
+			FILE *AtencionesGuardadas;
+			Historia_Clinica atencion;
+			AtencionesGuardadas = fopen(direccion_archivo_atenciones, "rb");
+			// char separador[200];
+			// crearSeparador(separador, 90, '-');
+			rewind(AtencionesGuardadas);
+			fread(&atencion, sizeof(Historia_Clinica), 1, AtencionesGuardadas);
+			cout << "Listado de atenciones hechas por el veterinario." << endl << endl;
+			while( !feof(AtencionesGuardadas) ){
+				if(strcmp(buscar_veterinario.apellido_nombre, atencion.redactadaPor) == 0){
+					cout << "Datos del veterinario: " << endl;
+					cout << "-> Apellido y nombre: " << buscar_veterinario.apellido_nombre << endl;
+					cout << "-> Numero de matricula: " << buscar_veterinario.matricula << endl;
+					cout << "-> Numero de telefono: " << buscar_veterinario.telefono << endl;
+
+
+					cout << endl <<"Datos de la mascota atentida: "  << endl;
+					cout << "-> Apellido y nombre: " << atencion.apellido_nombre << endl;
+					cout << "-> DNI (del due\244o): " << atencion.DNI << endl;
+					cout << "-> Localidad: " << atencion.localidad << endl;
+					cout << "-> Edad: " << atencion.edad << endl;
+					cout << "-> Peso: " << atencion.peso << endl;
+
+					cout << endl << "Datos de la atencion: " << endl;
+					cout << "-> Fecha de la consulta: ";
+					formatearFecha(atencion.fechaAtencion);
+					cout << endl;
+					cout << "-> Evolucion de la mascota: " << atencion.evolucion << endl;
+
+					// cout << endl << separador << endl << endl;
+					limpiar(1);
+				}
+				fread(&atencion, sizeof(Historia_Clinica), 1, AtencionesGuardadas);
+			}
+		}
+		else{
+			cout << "El apellido y nombre ingresado no coincide con el de un veterinario registrado." << endl;
+			limpiar(1);
+		}
+	
+	}
+	else{
+		cout << "No hay atenciones registradas." << endl;
+		limpiar(1);
+	}
+};
+
+int buscarVeterinario_porNombre(Usuario_Veterinario &buscar_veterinario){
+	FILE *VeterinariosGuardados;
+	Usuario_Veterinario veterinario;
+	VeterinariosGuardados = fopen(direccion_archivo_veterinarios, "rb");
+	rewind(VeterinariosGuardados);
+	fread(&veterinario, sizeof(Usuario_Veterinario), 1, VeterinariosGuardados);
+	while( !feof(VeterinariosGuardados) ){
+		if(strcmp(buscar_veterinario.apellido_nombre, veterinario.apellido_nombre) == 0){
+			buscar_veterinario = veterinario;
+			fclose(VeterinariosGuardados);
+			return 1;
+		}
+		fread(&veterinario, sizeof(Usuario_Veterinario), 1, VeterinariosGuardados);
+	}
+	fclose(VeterinariosGuardados);
+	return 0;
 };
