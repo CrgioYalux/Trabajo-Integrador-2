@@ -6,6 +6,13 @@ void sesionTemporal(Usuario_Veterinario veterinario);
 void visualizarTurnos();
 int recuperarDatosMascota_conDNI(Mascota &buscar_mascota);
 void calcularEdad(char resultado[], Fecha fecha1, Fecha fecha2);
+void registrarEvolucion();
+int comprobarExistenciaMascota(char nombreMascota[]);
+int recuperarDatosMascota_conNombre(Mascota &buscar_mascota);
+int recuperarDatosVeterinario_conMatricula(Usuario_Veterinario &buscar_veterinario);
+void guardarHistoriaClinica(Historia_Clinica atencion);
+void borrarTurnoRegistrado(Turno borrar_turno);
+void actualizarRankingAtenciones(char apellidoNombre_veterinario[]);
 
 int menu_consultorio(){
 	int elegir;
@@ -25,6 +32,7 @@ int menu_consultorio(){
 				visualizarTurnos();
 				break;
 			case 2:
+				registrarEvolucion();
 				break;
 			case 3:
 				remove(direccion_archivo_sesion);
@@ -229,3 +237,168 @@ void calcularEdad(char resultado[], Fecha fecha1, Fecha fecha2){
 	strcpy(resultado, aux);
 };
 
+void registrarEvolucion(){
+	Historia_Clinica atencion;
+
+	if(comprobarExistenciaArchivo(direccion_archivo_mascotas)){
+		inputString(atencion.apellido_nombre, "Ingrese el apellido y nombre de la mascota", 61);
+		if(comprobarExistenciaMascota(atencion.apellido_nombre)){
+			Mascota mascota;
+			strcpy(mascota.apellido_nombre, atencion.apellido_nombre);
+			char edadMascota[100];
+
+			cout << "Ingrese la fecha actual: " << endl;
+			inputInt(atencion.fechaAtencion.day, "Dia: ", true, 1, 30);
+			inputInt(atencion.fechaAtencion.month, "Mes: ", true, 1, 12);
+			inputInt(atencion.fechaAtencion.year, "A\244o: ", true, 1980, 2021);
+			
+			recuperarDatosMascota_conNombre(mascota);
+			atencion.DNI = mascota.DNI;
+			strcpy(atencion.localidad, mascota.localidad);
+			calcularEdad(edadMascota, mascota.fechaNacimiento, atencion.fechaAtencion);
+			strcpy(atencion.edad, edadMascota);
+			atencion.peso = mascota.peso;
+			
+			inputString(atencion.evolucion,"Evolucion de la mascota: ", 381, 1);
+
+			FILE *SesionActual;
+			Usuario_Veterinario veterinario;
+			SesionActual = fopen(direccion_archivo_sesion, "rb");
+			rewind(SesionActual);
+			fread(&veterinario, sizeof(Usuario_Veterinario), 1, SesionActual);
+			recuperarDatosVeterinario_conMatricula(veterinario);	
+			fclose(SesionActual);
+			strcpy(atencion.redactadaPor, veterinario.apellido_nombre);
+			
+			Turno borrar_turno;
+			borrar_turno.DNI = mascota.DNI;
+			guardarHistoriaClinica(atencion);
+			borrarTurnoRegistrado(borrar_turno);
+			actualizarRankingAtenciones(atencion.redactadaPor);
+
+			cout << "Datos de la evolucion registrada" << endl;
+			cout << "Apellido y nombre de la mascota: " << atencion.apellido_nombre << endl;
+			cout << "DNI (del due\244o): " << atencion.DNI << endl;
+			cout << "Edad de la mascota: " << atencion.edad << endl;
+			cout << "Evolucion: " << atencion.evolucion << endl;
+			cout << "Fecha de atencion: ";
+			formatearFecha(atencion.fechaAtencion);
+			cout << endl;
+			cout << "Localidad: " << atencion.localidad << endl;
+			cout << "Peso de la mascota: " << atencion.peso << endl;
+			cout << "Apellido y nombre del veterinario: " << atencion.redactadaPor << endl;
+		}
+		else{
+			cout << "No existe una mascota registrada con ese apellido y nombre." << endl;
+		}
+	}
+	else{
+		cout << "No hay mascotas registradas." << endl;
+	}
+	limpiar(1);
+};
+
+int comprobarExistenciaMascota(char nombreMascota[]){
+	FILE *MascotasGuardadas;
+	Mascota mascota;
+	MascotasGuardadas = fopen(direccion_archivo_mascotas, "rb");
+	rewind(MascotasGuardadas);
+	fread(&mascota, sizeof(Mascota), 1, MascotasGuardadas);
+	while( !feof(MascotasGuardadas) ){
+		if(strcmp(nombreMascota, mascota.apellido_nombre) == 0){
+			fclose(MascotasGuardadas);
+			return 1;
+		}
+		fread(&mascota, sizeof(Mascota), 1, MascotasGuardadas);
+	}
+	fclose(MascotasGuardadas);
+	return 0;
+};
+
+int recuperarDatosMascota_conNombre(Mascota &buscar_mascota){
+	FILE *MascotasGuardadas;
+	Mascota mascota;
+	MascotasGuardadas = fopen(direccion_archivo_mascotas, "rb");
+	rewind(MascotasGuardadas);
+	fread(&mascota, sizeof(Mascota), 1, MascotasGuardadas);
+	while( !feof(MascotasGuardadas) ){
+		if(strcmp(buscar_mascota.apellido_nombre, mascota.apellido_nombre) == 0){
+			buscar_mascota = mascota;
+			fclose(MascotasGuardadas);
+			return 1;
+		}
+		fread(&mascota, sizeof(Mascota), 1, MascotasGuardadas);
+	}
+	fclose(MascotasGuardadas);
+	return 0;
+};
+
+int recuperarDatosVeterinario_conMatricula(Usuario_Veterinario &buscar_veterinario){
+	FILE *VeterinariosGuardados;
+	Usuario_Veterinario veterinario;
+	VeterinariosGuardados = fopen(direccion_archivo_veterinarios, "rb");
+	rewind(VeterinariosGuardados);
+	fread(&veterinario, sizeof(Usuario_Veterinario), 1, VeterinariosGuardados);
+	while( !feof(VeterinariosGuardados) ){
+		if(buscar_veterinario.matricula == veterinario.matricula){
+			buscar_veterinario = veterinario;
+			fclose(VeterinariosGuardados);
+			return 1;
+		}
+		fread(&veterinario, sizeof(Usuario_Veterinario), 1, VeterinariosGuardados);
+	}
+	fclose(VeterinariosGuardados);
+	return 0;
+};
+
+void guardarHistoriaClinica(Historia_Clinica atencion){
+	FILE *AtencionesGuardadas;
+	AtencionesGuardadas = fopen(direccion_archivo_atenciones, "a+b");
+	fseek(AtencionesGuardadas, sizeof(Historia_Clinica), SEEK_END);
+	fwrite(&atencion, sizeof(Historia_Clinica), 1, AtencionesGuardadas);
+	fclose(AtencionesGuardadas);
+};
+
+void borrarTurnoRegistrado(Turno borrar_turno){
+	FILE *TurnosGuardados, *Aux;
+	Turno turno;
+	TurnosGuardados = fopen(direccion_archivo_turnos, "rb");
+	Aux = fopen(direccion_archivo_turnos_aux, "a+b");
+	rewind(TurnosGuardados);
+	fread(&turno, sizeof(Turno), 1, TurnosGuardados);
+	while( !feof(TurnosGuardados) ){
+		if(turno.DNI != borrar_turno.DNI){
+			fwrite(&turno, sizeof(Turno), 1, Aux);
+		}
+		fread(&turno, sizeof(Turno), 1, TurnosGuardados);
+	}
+	fclose(TurnosGuardados);
+	fclose(Aux);
+	remove(direccion_archivo_turnos);
+	rename(direccion_archivo_turnos_aux, direccion_archivo_turnos);
+}
+
+void actualizarRankingAtenciones(char apellidoNombre_veterinario[]){
+	FILE *RankingGuardado, *Aux;
+	ContadorAtenciones contador;
+	ContadorAtenciones nuevo_contador;
+	RankingGuardado = fopen(direccion_archivo_ranking, "rb");
+	Aux = fopen(direccion_archivo_ranking_aux, "a+b");
+	rewind(RankingGuardado);
+	fread(&contador, sizeof(ContadorAtenciones), 1, RankingGuardado);
+	while( !feof(RankingGuardado) ){
+		if(strcmp(apellidoNombre_veterinario, contador.apellido_nombre_veterinario) == 0){
+			strcpy(nuevo_contador.apellido_nombre_veterinario, contador.apellido_nombre_veterinario);
+			nuevo_contador.cantAtenciones = contador.cantAtenciones + 1;
+			fwrite(&nuevo_contador, sizeof(ContadorAtenciones), 1, Aux);
+		}
+		else{
+			fwrite(&contador, sizeof(ContadorAtenciones), 1, Aux);
+		}
+		fread(&contador, sizeof(ContadorAtenciones), 1, RankingGuardado);
+	}
+	fclose(RankingGuardado);
+	fclose(Aux);
+	remove(direccion_archivo_ranking);
+	rename(direccion_archivo_ranking_aux, direccion_archivo_ranking);
+};
