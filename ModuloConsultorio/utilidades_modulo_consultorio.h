@@ -1,4 +1,5 @@
 int menu_consultorio();
+int menu_autenticacion_consultorio();
 
 int menu_consultorio(){
 	int elegir;
@@ -22,5 +23,32 @@ int menu_consultorio(){
 				menuLoop = false;
 				break;
 		}
+	}
+};
+
+int menu_autenticacion_consultorio(){
+	int elegir;
+	bool menuLoop = true;
+	Cadena opciones[] = {"Iniciar Sesion"};
+	char texto_menu[250];
+	formatearMenu("    Menu Autenticacion", texto_menu, opciones, 1);
+	while(menuLoop){	
+		inputInt(elegir, texto_menu, true, 1, 2);
+
+		system("cls");
+
+		switch (elegir){
+			case 1:
+				if(iniciarSesionConsultorio()){
+					menuLoop = false;
+					return 1;
+				}
+				break;
+
+			case 2:
+				menuLoop = false;
+				return 0;
+		}
+
 	}
 };
