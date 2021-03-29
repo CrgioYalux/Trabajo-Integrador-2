@@ -58,6 +58,22 @@ struct Turno {
 	char detalleAtencion[381];
 };
 
+struct Historia_Clinica {
+	char apellido_nombre[61];
+	int DNI;
+	char localidad[61];
+	char edad[61];
+	float peso;
+	char evolucion[381];
+	char redactadaPor[61];
+	Fecha fechaAtencion;
+};
+
+struct ContadorAtenciones {
+	char apellido_nombre_veterinario[61];
+	int cantAtenciones;
+};
+
 void limpiar(int i);
 void inputString(char resultado[], const char texto[], int cantMaxCaracteres = 101, int cantMinCaracteres = 1);
 void inputFloat(float &resultado, const char texto[], bool permitirLimites = false, int valorMin = INT_MIN, int valorMax = INT_MAX);
