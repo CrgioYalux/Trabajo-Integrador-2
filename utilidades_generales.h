@@ -72,14 +72,14 @@ void crearSeparador(char resultado[], int len, const char separador);
 char enteroACaracter(int numero);
 void formatearMenu(const char tituloMenu[], char output[], Cadena opciones[], int cantOpciones);
 int esMinuscula(char nombreUsuario[]);
-void aMinuscula(char cadena[], char* copia);
+void aMinuscula(char cadena[], char copia[]);
 int comprobarClaveUsuario(char claveUsuario[]);
 int comprobarNombreUsuario(char nombreUsuario[]);
 int comprobarApellidoYNombre(char apellidoYNombre[]);
 int analizarCadenaPorCaracteresNoAlfanumericos(char cadena[]);
 int analizarCadenaPorCaracteresSoloAlfabeticos(char cadena[]);
-int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncontrada);
-int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncontrada);
+int analizarCadenaPorConsecuciones_Letras(char cadena[], char consecucionEncontrada[]);
+int analizarCadenaPorConsecuciones_Numeros(char cadena[], char consecucionEncontrada[]);
 int comprobarExistenciaArchivo(const char direccion[]);
 
 
@@ -326,7 +326,7 @@ int esMinuscula(char nombreUsuario[]){
 	return 1;
 };
 
-void aMinuscula(char cadena[], char* copia) {
+void aMinuscula(char cadena[], char copia[]) {
 	int cadenaLen = strlen(cadena);
 	int index = 0;
   	for (int i = 0; i < cadenaLen; i++) {
@@ -448,7 +448,8 @@ int comprobarApellidoYNombre(char apellidoYNombre[]){
     limpiar(1);
 
     return 0;
-  } 
+	} 
+}
 
 int analizarCadenaPorCaracteresNoAlfanumericos(char cadena[]){
 	int cadenaLen = strlen(cadena);
@@ -475,7 +476,7 @@ int analizarCadenaPorCaracteresSoloAlfabeticos(char cadena[]){
   return 0;
 };
 
-int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncontrada){
+int analizarCadenaPorConsecuciones_Letras(char cadena[], char consecucionEncontrada[]){
 	int cadenaLen = strlen(cadena);
 	char copiaEnMinusculas[cadenaLen];
 	aMinuscula(cadena, copiaEnMinusculas);
@@ -514,7 +515,7 @@ int analizarCadenaPorConsecuciones_Letras(char cadena[], char *consecucionEncont
 };
 
 
-int analizarCadenaPorConsecuciones_Numeros(char cadena[], char *consecucionEncontrada){
+int analizarCadenaPorConsecuciones_Numeros(char cadena[], char consecucionEncontrada[]){
 	int cadenaLen = strlen(cadena);
 	int index = 0;
 	char aux;
