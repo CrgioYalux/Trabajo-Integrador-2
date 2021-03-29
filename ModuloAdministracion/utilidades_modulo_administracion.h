@@ -93,6 +93,7 @@ void menu_administracion(){
 				registrarUsuarioAsistente();
 				break;
 			case 3:
+				listarAtenciones_porVeterinario();
 				break;
 			case 4:
 				break;
