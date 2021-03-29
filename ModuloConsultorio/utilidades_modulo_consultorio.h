@@ -27,6 +27,7 @@ int menu_consultorio(){
 			case 2:
 				break;
 			case 3:
+				remove(direccion_archivo_sesion);
 				menuLoop = false;
 				break;
 		}
