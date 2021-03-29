@@ -65,6 +65,10 @@ void inputInt(int &resultado, const char texto[], bool permitirLimites = false, 
 int comprobarCaracteresFloat(char numero[]);
 int cantidadCoincidencias(char cadena1[], char cadena2[]);
 int ASCII(char letra);
+void formatearFecha(Fecha fecha);
+void enteroACadena(int entero, char resultado[]);
+int descomponerNumero(int numero);
+void crearArregloDesdeInt(int numero, int cantUnidades, int arregloResultado[]);
 float convertirCadenaEnFloat(char cadena[]);
 int convertirCadenaEnEntero(char cadena[]);
 int lenCadenaMasLarga(Cadena cadenas[], int cantCadenas);
@@ -213,6 +217,50 @@ int cantidadCoincidencias(char cadena1[], char cadena2[]){
 int ASCII(char letra){
 	int ascii = letra;
 	return ascii;
+};
+
+void formatearFecha(Fecha fecha){
+	if(fecha.day < 10){
+		cout << "0" << fecha.day << "/";
+	}
+	else{
+		cout << fecha.day << "/";
+	}
+	if(fecha.month < 10){
+		cout << "0" << fecha.month << "/";
+	}
+	else{
+		cout << fecha.month << "/";	
+	}
+	cout << fecha.year;
+};
+
+void enteroACadena(int entero, char resultado[]){
+	int enteroLen = descomponerNumero(entero);
+	int arreglo_entero[enteroLen]; 
+	crearArregloDesdeInt(entero, enteroLen, arreglo_entero);
+
+	for(int i = 0; i < enteroLen; i++){
+		resultado[i] = enteroACaracter(arreglo_entero[i]);
+	}
+};
+
+int descomponerNumero(int numero){
+	int unidades = 0;
+	while(true){
+		if(numero == 0){
+			return unidades;
+		}
+		numero /= 10;				
+		unidades++;
+	}
+};
+
+void crearArregloDesdeInt(int numero, int cantUnidades, int arregloResultado[]){
+	for(int i=cantUnidades-1; i>=0; i--){
+		arregloResultado[i] = numero % 10;
+		numero /=  10;
+	}
 };
 
 float convertirCadenaEnFloat(char cadena[]){
