@@ -8,7 +8,7 @@ int comprobarExistenciaMatricula(int matricula);
 int buscarMascotaPorDNI(int DNI);
 int iniciarSesionRecepcion();
 int validarAccesoRecepcion(Usuario_Asistente asistente);
-
+void listarAtenciones();
 
 int menu_recepcion(){
   int elegir;
@@ -31,6 +31,7 @@ int menu_recepcion(){
 				registrarTurno();
 				break;
 			case 3:
+				listarAtenciones();
         break;
       case 4:
         break;
@@ -307,4 +308,31 @@ int validarAccesoRecepcion(Usuario_Asistente asistente){
 	}
 	fclose(UsuariosGuardados);
 	return 0;
+};
+
+void listarAtenciones(){
+	if(comprobarExistenciaArchivo(direccion_archivo_atenciones)){
+		FILE *AtencionesGuardadas;
+		Historia_Clinica atencion;
+		AtencionesGuardadas = fopen(direccion_archivo_atenciones, "rb");
+		rewind(AtencionesGuardadas);
+		fread(&atencion, sizeof(Historia_Clinica), 1, AtencionesGuardadas);
+		int index = 1;
+		while( !feof(AtencionesGuardadas) ){
+			cout << "Atencion #" << index << endl << endl;
+			cout << "-> Atencion hecha por el veterinario: " << atencion.redactadaPor << endl;
+			cout << "-> Nombre de la mascota: " << atencion.apellido_nombre << endl;
+			cout << "-> Fecha de la atencion: ";
+			formatearFecha(atencion.fechaAtencion);
+			cout << endl << endl;
+			
+			index++;
+			fread(&atencion, sizeof(Historia_Clinica), 1, AtencionesGuardadas);
+		}
+		fclose(AtencionesGuardadas);
+	}
+	else{
+		cout << "No hay atenciones registradas." << endl;
+	}
+	limpiar(1);
 };
