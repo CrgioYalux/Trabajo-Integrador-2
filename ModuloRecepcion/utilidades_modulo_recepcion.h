@@ -34,6 +34,7 @@ int menu_recepcion(){
 				listarAtenciones();
         break;
       case 4:
+				menuLoop = false;
         break;
 		}
 	}
