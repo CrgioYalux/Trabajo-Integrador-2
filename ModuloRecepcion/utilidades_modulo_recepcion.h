@@ -11,6 +11,7 @@ int validarAccesoRecepcion(Usuario_Asistente asistente);
 void listarAtenciones();
 
 int menu_recepcion(){
+	system("cls");
   int elegir;
 	bool menuLoop = true;
 
@@ -41,6 +42,7 @@ int menu_recepcion(){
 };
 
 int menu_autenticacion_recepcion(){
+	system("cls");
 	int elegir;
 	bool menuLoop = true;
 	Cadena opciones[] = {"Iniciar Sesion"};

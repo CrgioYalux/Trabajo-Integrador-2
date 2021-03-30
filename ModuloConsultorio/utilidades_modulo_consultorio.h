@@ -15,6 +15,7 @@ void borrarTurnoRegistrado(Turno borrar_turno);
 void actualizarRankingAtenciones(char apellidoNombre_veterinario[]);
 
 int menu_consultorio(){
+	system("cls");
 	int elegir;
 	bool menuLoop = true;
 
@@ -43,6 +44,7 @@ int menu_consultorio(){
 };
 
 int menu_autenticacion_consultorio(){
+	system("cls");
 	int elegir;
 	bool menuLoop = true;
 	Cadena opciones[] = {"Iniciar Sesion"};

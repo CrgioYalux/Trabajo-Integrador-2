@@ -5,6 +5,7 @@
 #include "./ModuloAdministracion/utilidades_modulo_administracion.h"
 
 int main(){
+	system("cls");
   int elegir;
 	bool menuLoop = true;
 

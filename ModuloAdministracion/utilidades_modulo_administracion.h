@@ -75,6 +75,7 @@ int validarAcceso(Usuario buscar_usuario){
 
 
 void menu_administracion(){
+	system("cls");
 	bool loopMenu = true;
 	int elegir;
 
@@ -108,6 +109,7 @@ void menu_administracion(){
 };
 
 int menu_autenticacion_administracion(){
+	system("cls");
 	bool loopMenu = true;
 	int elegir;
 
